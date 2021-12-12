@@ -61,9 +61,4 @@ class MainActivityExecutorService : AppCompatActivity() {
             }
         }
     }
-
-    override fun onDestroy() {
-        executor.shutdown()
-        super.onDestroy()
-    }
 }
