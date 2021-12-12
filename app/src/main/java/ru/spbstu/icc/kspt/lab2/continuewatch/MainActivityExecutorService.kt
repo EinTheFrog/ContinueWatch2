@@ -12,7 +12,6 @@ class MainActivityExecutorService : AppCompatActivity() {
     var secondsElapsed: Int = 0
     private var secondsElapsedBeforeStop = 0
     private lateinit var textSecondsElapsed: TextView
-    private val executor: ExecutorService = Executors.newFixedThreadPool(1)
     private lateinit var future: Future<*>
 
     companion object {
@@ -52,8 +51,8 @@ class MainActivityExecutorService : AppCompatActivity() {
     }
 
     private fun initBackgroundThread(): Future<*> {
-        return executor.submit {
-            while(!executor.isShutdown) {
+        return MyApplication.executor.submit {
+            while(!MyApplication.executor.isShutdown) {
                 Thread.sleep(1000)
                 textSecondsElapsed.post {
                     textSecondsElapsed.text = getString(R.string.textSeconds, secondsElapsed++)
