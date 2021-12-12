@@ -5,13 +5,15 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.Future
 import java.util.concurrent.RejectedExecutionException
 
 class MainActivityExecutorService : AppCompatActivity() {
     var secondsElapsed: Int = 0
-    var secondsElapsedBeforeStop = 0
+    private var secondsElapsedBeforeStop = 0
     private lateinit var textSecondsElapsed: TextView
-    private lateinit var executor: ExecutorService
+    private val executor: ExecutorService = Executors.newFixedThreadPool(1)
+    private lateinit var future: Future<*>
 
     companion object {
         const val STATE_SECONDS = "secondsElapsed"
@@ -32,12 +34,12 @@ class MainActivityExecutorService : AppCompatActivity() {
     }
 
     override fun onStart() {
-        initBackgroundThread()
+        future = initBackgroundThread()
         super.onStart()
     }
 
     override fun onStop() {
-        executor.shutdown()
+        future.cancel(true)
         super.onStop()
     }
 
@@ -49,9 +51,8 @@ class MainActivityExecutorService : AppCompatActivity() {
         super.onSaveInstanceState(outState)
     }
 
-    private fun initBackgroundThread() {
-        executor = Executors.newFixedThreadPool(1)
-        executor.execute {
+    private fun initBackgroundThread(): Future<*> {
+        return executor.submit {
             while(!executor.isShutdown) {
                 Thread.sleep(1000)
                 textSecondsElapsed.post {
@@ -59,5 +60,10 @@ class MainActivityExecutorService : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        executor.shutdown()
+        super.onDestroy()
     }
 }
