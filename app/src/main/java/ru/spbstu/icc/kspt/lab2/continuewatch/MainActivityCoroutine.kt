@@ -25,12 +25,10 @@ class MainActivityCoroutine : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                while (isActive) {
-                    delay(1000)
-                    binding.textSecondsElapsed.text = getString(R.string.textSeconds, ++secondsElapsed)
-                }
+        lifecycleScope.launchWhenStarted {
+            while (isActive) {
+                delay(1000)
+                binding.textSecondsElapsed.text = getString(R.string.textSeconds, ++secondsElapsed)
             }
         }
     }
