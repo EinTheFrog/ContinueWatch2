@@ -1,5 +1,6 @@
 package ru.spbstu.icc.kspt.lab2.continuewatch
 
+import android.app.Application
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +14,7 @@ class MainActivityExecutorService : AppCompatActivity() {
     private var secondsElapsedBeforeStop = 0
     private lateinit var textSecondsElapsed: TextView
     private lateinit var future: Future<*>
+    private lateinit var myApp: MyApplication
 
     companion object {
         const val STATE_SECONDS = "secondsElapsed"
@@ -23,6 +25,7 @@ class MainActivityExecutorService : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         textSecondsElapsed = findViewById(R.id.textSecondsElapsed)
+        myApp = application as MyApplication
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -51,8 +54,8 @@ class MainActivityExecutorService : AppCompatActivity() {
     }
 
     private fun initBackgroundThread(): Future<*> {
-        return MyApplication.executor.submit {
-            while(!MyApplication.executor.isShutdown) {
+        return myApp.executor.submit {
+            while(!myApp.executor.isShutdown) {
                 Thread.sleep(1000)
                 textSecondsElapsed.post {
                     textSecondsElapsed.text = getString(R.string.textSeconds, secondsElapsed++)
